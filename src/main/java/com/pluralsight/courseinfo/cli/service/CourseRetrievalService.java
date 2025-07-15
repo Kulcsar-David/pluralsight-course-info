@@ -18,7 +18,11 @@ public class CourseRetrievalService {
 
         try {
             HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            return response.body();
+            return switch (response.statusCode()){
+                case 200 -> response.body();
+                case 404 -> "";
+                default -> throw new RuntimeException("Pluralsight API call failed with the status code: " + response.statusCode());
+            };
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Couldn't call Pluralsight API - ", e);
         }
